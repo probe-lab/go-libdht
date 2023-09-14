@@ -4,7 +4,7 @@ import (
 	"crypto/sha256"
 
 	"github.com/libp2p/go-libdht/kad"
-	"github.com/libp2p/go-libdht/key"
+	"github.com/plprobelab/go-kademlia/key"
 )
 
 // ID is a concrete implementation of the NodeID interface.
@@ -63,4 +63,36 @@ func (s StringID) Equal(other string) bool {
 
 func (s StringID) String() string {
 	return string(s)
+}
+
+var _ kad.NodeID[kad.Key256] = keyID[kad.Key256]{}
+var _ kad.Response[kad.Key256, keyID[kad.Key256]] = resp[kad.Key256, keyID[kad.Key256]]{}
+var _ kad.Request[kad.Key256, keyID[kad.Key256]] = req[kad.Key256, keyID[kad.Key256]]{}
+
+type keyID[K kad.Key[K]] struct {
+	key K
+}
+
+func (k keyID[K]) Key() K {
+	return k.key
+}
+
+type resp[K kad.Key[K], N kad.NodeID[K]] struct {
+	peers []N
+}
+
+func (r resp[K, N]) CloserNodes() []N {
+	return r.peers
+}
+
+type req[K kad.Key[K], N kad.NodeID[K]] struct {
+	targetId N
+}
+
+func (r req[K, N]) Target() K {
+	return r.targetId.Key()
+}
+
+func (r req[K, N]) EmptyResponse() kad.Response[K, N] {
+	return resp[K, N]{}
 }

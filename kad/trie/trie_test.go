@@ -4,7 +4,7 @@ import (
 	"math/rand"
 	"testing"
 
-	"github.com/plprobelab/go-kademlia/internal/kadtest"
+	"github.com/libp2p/go-libdht/kad/kadtest"
 
 	"github.com/libp2p/go-libdht/kad"
 	"github.com/plprobelab/go-kademlia/key"

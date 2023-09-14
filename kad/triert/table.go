@@ -5,9 +5,9 @@ import (
 	"sync"
 	"sync/atomic"
 
-	"github.com/libp2p/go-libdht/internal/kadtest"
 	"github.com/libp2p/go-libdht/kad"
-	"github.com/libp2p/go-libdht/key/trie"
+	"github.com/libp2p/go-libdht/kad/kadtest"
+	"github.com/libp2p/go-libdht/kad/trie"
 )
 
 // TrieRT is a routing table backed by a XOR Trie which offers good scalablity and performance
