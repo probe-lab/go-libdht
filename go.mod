@@ -1,4 +1,4 @@
-module github.com/plprobelab/go-kademlia
+module github.com/libp2p/go-libdht
 
 go 1.21
 
@@ -11,6 +11,7 @@ require (
 	github.com/multiformats/go-multibase v0.2.0
 	github.com/multiformats/go-multicodec v0.9.0
 	github.com/multiformats/go-multihash v0.2.3
+	github.com/plprobelab/go-kademlia v0.0.0-20230914085641-54e0b94d02bd
 	github.com/stretchr/testify v1.8.4
 	go.opentelemetry.io/otel v1.16.0
 	go.opentelemetry.io/otel/exporters/jaeger v1.16.0
@@ -48,7 +49,6 @@ require (
 	github.com/klauspost/compress v1.16.7 // indirect
 	github.com/klauspost/cpuid/v2 v2.2.5 // indirect
 	github.com/koron/go-ssdp v0.0.4 // indirect
-	github.com/kr/text v0.2.0 // indirect
 	github.com/libp2p/go-buffer-pool v0.1.0 // indirect
 	github.com/libp2p/go-cidranger v1.1.0 // indirect
 	github.com/libp2p/go-flow-metrics v0.1.0 // indirect
@@ -90,7 +90,6 @@ require (
 	go.uber.org/atomic v1.11.0 // indirect
 	go.uber.org/dig v1.17.0 // indirect
 	go.uber.org/fx v1.20.0 // indirect
-	go.uber.org/goleak v1.2.1 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
 	go.uber.org/zap v1.24.0 // indirect
 	golang.org/x/crypto v0.11.0 // indirect
