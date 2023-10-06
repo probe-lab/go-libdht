@@ -1,5 +1,9 @@
 # go-libdht
 
+[![ProbeLab](https://img.shields.io/badge/made%20by-ProbeLab-blue.svg)](https://probelab.io)
+[![GoDoc](https://pkg.go.dev/badge/github.com/plprobelab/go-libdht)](https://pkg.go.dev/github.com/plprobelab/go-libdht)
+[![Build status](https://img.shields.io/github/actions/workflow/status/plprobelab/go-libdht/go-test.yml?branch=main)](https://github.com/plprobelab/go-libdht/actions)
+
 `go-libdht` is a generic toolbox designed for the implementation and experimentation of Distributed Hash Tables (DHT) in Go. It establishes foundational types and interfaces applicable across a broad spectrum of DHTs, especially those sharing a similar topology. By offering reusable components like keys and routing tables, `go-libdht` streamlines the DHT implementation process. Using `go-libdht`, developers can seamlessly craft their own DHTs using the provided modular components.
 
 ## What defines a Distributed Hash Table?
@@ -10,10 +14,10 @@ Keys and node identifiers are typically mapped to a Point within a topology dict
 
 For peak efficiency and scalability in a DHT, it's ideal for nodes to form a [Small World Network](https://en.wikipedia.org/wiki/Small-world_network). In such a setup, each node maintains information on $O(log(n))$ remote peers, and the complexity of lookups similarly scales as $O(log(n))$. Nodes are tasked with monitoring two categories of peers:
 
-* _Short Peers_: These are proximate within the DHT's topology. Their primary function is to ensure routing soundness, guaranteeing that every participating peer remains accessible since they are known by neighboring nodes.
-* _Long Peers_: Positioned more distantly within the topology, these peers bolster lookup speeds, facilitating rapid routing to distant locations in the topology.
+* _Nearby Peers_: These are proximate within the DHT's topology. Their primary function is to ensure routing soundness, guaranteeing that every participating peer remains accessible since they are known by neighboring nodes.
+* _Faraway Peers_: Positioned more distantly within the topology, these peers bolster lookup speeds, facilitating rapid routing to distant locations in the topology.
 
-The specifics of how nodes select _short_ and _long_ peers are determined by the individual design nuances of each DHT topology.
+The specifics of how nodes select _nearby_ and _faraway_ peers are determined by the individual design nuances of each DHT topology.
 
 ## What is in the scope of `go-libdht`
 
