@@ -113,7 +113,7 @@ func TestAddIsOrderIndependent(t *testing.T) {
 		if d := CheckInvariant(base); d != nil {
 			t.Fatalf("base trie invariant discrepancy: %v", d)
 		}
-		for j := 0; j < 100; j++ {
+		for range 100 {
 			perm := rand.Perm(len(s.Keys))
 			reordered := New[kadtest.Key32, any]()
 			for i := range s.Keys {
@@ -138,7 +138,7 @@ func TestImmutableAddIsOrderIndependent(t *testing.T) {
 		if d := CheckInvariant(base); d != nil {
 			t.Fatalf("base trie invariant discrepancy: %v", d)
 		}
-		for j := 0; j < 100; j++ {
+		for range 100 {
 			perm := rand.Perm(len(s.Keys))
 			reordered := New[kadtest.Key32, any]()
 			for i := range s.Keys {
@@ -568,7 +568,7 @@ func TestRemoveUnknown(t *testing.T) {
 	}
 	require.Equal(t, len(sampleKeySet.Keys), tr.Size())
 
-	unknown := newKeyNotInSet(sampleKeySet.Keys[0].BitLen(), sampleKeySet)
+	unknown := newKeyNotInSet(sampleKeySet)
 
 	removed := tr.Remove(unknown)
 	require.False(t, removed)
@@ -586,7 +586,7 @@ func TestImmutableRemoveUnknown(t *testing.T) {
 	}
 	require.Equal(t, len(sampleKeySet.Keys), tr.Size())
 
-	unknown := newKeyNotInSet(sampleKeySet.Keys[0].BitLen(), sampleKeySet)
+	unknown := newKeyNotInSet(sampleKeySet)
 
 	trNext, err := Remove(tr, unknown)
 	require.NoError(t, err)
@@ -610,7 +610,7 @@ func TestEqual(t *testing.T) {
 	}
 	require.True(t, Equal(a, b))
 
-	sampleKeySet2 := newKeySetOfLength(12, 64)
+	sampleKeySet2 := newKeySetOfLength(12)
 	c, err := trieFromKeys[kadtest.Key32, any](sampleKeySet2.Keys)
 	if err != nil {
 		t.Fatalf("unexpected error during from keys: %v", err)
@@ -784,7 +784,7 @@ func BenchmarkFindNegative(b *testing.B) {
 func benchmarkBuildTrieMutable(n int) func(b *testing.B) {
 	return func(b *testing.B) {
 		keys := make([]kadtest.Key32, n)
-		for i := 0; i < n; i++ {
+		for i := range n {
 			keys[i] = kadtest.RandomKey()
 		}
 		b.ResetTimer()
@@ -802,7 +802,7 @@ func benchmarkBuildTrieMutable(n int) func(b *testing.B) {
 func benchmarkBuildTrieImmutable(n int) func(b *testing.B) {
 	return func(b *testing.B) {
 		keys := make([]kadtest.Key32, n)
-		for i := 0; i < n; i++ {
+		for i := range n {
 			keys[i] = kadtest.RandomKey()
 		}
 		b.ResetTimer()
@@ -820,7 +820,7 @@ func benchmarkBuildTrieImmutable(n int) func(b *testing.B) {
 func benchmarkAddMutable(n int) func(b *testing.B) {
 	return func(b *testing.B) {
 		keys := make([]kadtest.Key32, n)
-		for i := 0; i < n; i++ {
+		for i := range n {
 			keys[i] = kadtest.RandomKey()
 		}
 		tr := New[kadtest.Key32, any]()
@@ -852,7 +852,7 @@ func benchmarkAddMutable(n int) func(b *testing.B) {
 func benchmarkAddImmutable(n int) func(b *testing.B) {
 	return func(b *testing.B) {
 		keys := make([]kadtest.Key32, n)
-		for i := 0; i < n; i++ {
+		for i := range n {
 			keys[i] = kadtest.RandomKey()
 		}
 		trBase := New[kadtest.Key32, any]()
@@ -879,7 +879,7 @@ func benchmarkAddImmutable(n int) func(b *testing.B) {
 func benchmarkRemoveMutable(n int) func(b *testing.B) {
 	return func(b *testing.B) {
 		keys := make([]kadtest.Key32, n)
-		for i := 0; i < n; i++ {
+		for i := range n {
 			keys[i] = kadtest.RandomKey()
 		}
 		tr := New[kadtest.Key32, any]()
@@ -911,7 +911,7 @@ func benchmarkRemoveMutable(n int) func(b *testing.B) {
 func benchmarkRemoveImmutable(n int) func(b *testing.B) {
 	return func(b *testing.B) {
 		keys := make([]kadtest.Key32, n)
-		for i := 0; i < n; i++ {
+		for i := range n {
 			keys[i] = kadtest.RandomKey()
 		}
 		trBase := New[kadtest.Key32, any]()
@@ -938,7 +938,7 @@ func benchmarkRemoveImmutable(n int) func(b *testing.B) {
 func benchmarkFindPositive(n int) func(b *testing.B) {
 	return func(b *testing.B) {
 		keys := make([]kadtest.Key32, n)
-		for i := 0; i < n; i++ {
+		for i := range n {
 			keys[i] = kadtest.RandomKey()
 		}
 		tr := New[kadtest.Key32, any]()
@@ -956,7 +956,7 @@ func benchmarkFindPositive(n int) func(b *testing.B) {
 func benchmarkFindNegative(n int) func(b *testing.B) {
 	return func(b *testing.B) {
 		keys := make([]kadtest.Key32, n)
-		for i := 0; i < n; i++ {
+		for i := range n {
 			keys[i] = kadtest.RandomKey()
 		}
 		tr := New[kadtest.Key32, any]()
@@ -964,7 +964,7 @@ func benchmarkFindNegative(n int) func(b *testing.B) {
 			tr, _ = Add(tr, kk, nil)
 		}
 		unknown := make([]kadtest.Key32, n)
-		for i := 0; i < n; i++ {
+		for i := range n {
 			kk := kadtest.RandomKey()
 			if found, _ := Find(tr, kk); found {
 				continue
@@ -984,17 +984,17 @@ type keySet struct {
 	Keys []kadtest.Key32
 }
 
-var sampleKeySet = newKeySetOfLength(12, 64)
+var sampleKeySet = newKeySetOfLength(12)
 
 func newKeySetList(n int) []*keySet {
 	s := make([]*keySet, n)
 	for i := range s {
-		s[i] = newKeySetOfLength(31, 32)
+		s[i] = newKeySetOfLength(31)
 	}
 	return s
 }
 
-func newKeySetOfLength(n int, bits int) *keySet {
+func newKeySetOfLength(n int) *keySet {
 	set := make([]kadtest.Key32, 0, n)
 	seen := make(map[string]bool)
 	for len(set) < n {
@@ -1010,7 +1010,7 @@ func newKeySetOfLength(n int, bits int) *keySet {
 	}
 }
 
-func newKeyNotInSet(bits int, ks *keySet) kadtest.Key32 {
+func newKeyNotInSet(ks *keySet) kadtest.Key32 {
 	seen := make(map[string]bool)
 	for i := range ks.Keys {
 		seen[ks.Keys[i].String()] = true
@@ -1128,10 +1128,10 @@ func (p *triePath[K]) bitString(depthToLeaf int) string {
 	if p == nil {
 		return ""
 	} else {
-		switch {
-		case p.bit == 0:
+		switch p.bit {
+		case 0:
 			return p.parent.bitString(depthToLeaf+1) + "0"
-		case p.bit == 1:
+		case 1:
 			return p.parent.bitString(depthToLeaf+1) + "1"
 		default:
 			panic("bit digit > 1")

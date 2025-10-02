@@ -62,7 +62,7 @@ func (tr *Trie[K, D]) IsEmptyLeaf() bool {
 	return !tr.HasKey() && tr.IsLeaf()
 }
 
-// IsEmptyLeaf reports whether the Trie is a leaf node without branches but has a key.
+// IsNonEmptyLeaf reports whether the Trie is a leaf node without branches but has a key.
 func (tr *Trie[K, D]) IsNonEmptyLeaf() bool {
 	return tr.HasKey() && tr.IsLeaf()
 }
