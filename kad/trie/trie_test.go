@@ -202,6 +202,233 @@ func TestAddIgnoresDuplicates(t *testing.T) {
 	}
 }
 
+func TestAddManyEmpty(t *testing.T) {
+	tr := New[kadtest.Key32, int]()
+
+	entries := []Entry[kadtest.Key32, int]{
+		{Key: kadtest.Key32(0x10000000), Data: 1},
+		{Key: kadtest.Key32(0x20000000), Data: 2},
+		{Key: kadtest.Key32(0x30000000), Data: 3},
+	}
+
+	added := tr.AddMany(entries...)
+	require.Equal(t, 3, added)
+	require.Equal(t, 3, tr.Size())
+
+	// Verify all keys are findable
+	for _, e := range entries {
+		found, data := Find(tr, e.Key)
+		require.True(t, found)
+		require.Equal(t, e.Data, data)
+	}
+
+	if d := CheckInvariant(tr); d != nil {
+		t.Fatalf("trie invariant discrepancy: %v", d)
+	}
+}
+
+func TestAddManySingle(t *testing.T) {
+	tr := New[kadtest.Key32, int]()
+
+	entries := []Entry[kadtest.Key32, int]{
+		{Key: kadtest.Key32(0x10000000), Data: 42},
+	}
+
+	added := tr.AddMany(entries...)
+	require.Equal(t, 1, added)
+	require.Equal(t, 1, tr.Size())
+
+	found, data := Find(tr, entries[0].Key)
+	require.True(t, found)
+	require.Equal(t, 42, data)
+
+	if d := CheckInvariant(tr); d != nil {
+		t.Fatalf("trie invariant discrepancy: %v", d)
+	}
+}
+
+func TestAddManyWithDuplicatesInNewEntries(t *testing.T) {
+	tr := New[kadtest.Key32, int]()
+
+	// Multiple entries with the same key
+	entries := []Entry[kadtest.Key32, int]{
+		{Key: kadtest.Key32(0x10000000), Data: 1},
+		{Key: kadtest.Key32(0x20000000), Data: 2},
+		{Key: kadtest.Key32(0x10000000), Data: 100}, // duplicate
+		{Key: kadtest.Key32(0x30000000), Data: 3},
+		{Key: kadtest.Key32(0x20000000), Data: 200}, // duplicate
+	}
+
+	added := tr.AddMany(entries...)
+
+	// Should add unique keys only
+	require.Equal(t, 3, added)
+	require.Equal(t, 3, tr.Size())
+
+	// First occurrence should win (based on lazy dedup logic)
+	found, data := Find(tr, kadtest.Key32(0x10000000))
+	require.True(t, found)
+	require.Equal(t, 1, data)
+
+	found, data = Find(tr, kadtest.Key32(0x20000000))
+	require.True(t, found)
+	require.Equal(t, 2, data)
+
+	if d := CheckInvariant(tr); d != nil {
+		t.Fatalf("trie invariant discrepancy: %v", d)
+	}
+}
+
+func TestAddManyWithKeysAlreadyInTrie(t *testing.T) {
+	tr := New[kadtest.Key32, int]()
+
+	// Pre-populate trie
+	existing := []Entry[kadtest.Key32, int]{
+		{Key: kadtest.Key32(0x10000000), Data: 100},
+		{Key: kadtest.Key32(0x20000000), Data: 200},
+	}
+	for _, e := range existing {
+		tr.Add(e.Key, e.Data)
+	}
+	require.Equal(t, 2, tr.Size())
+
+	// Try to add mix of new and existing keys
+	entries := []Entry[kadtest.Key32, int]{
+		{Key: kadtest.Key32(0x10000000), Data: 1}, // already exists
+		{Key: kadtest.Key32(0x30000000), Data: 3}, // new
+		{Key: kadtest.Key32(0x20000000), Data: 2}, // already exists
+		{Key: kadtest.Key32(0x40000000), Data: 4}, // new
+		{Key: kadtest.Key32(0x20000000), Data: 5}, // already exists
+		{Key: kadtest.Key32(0x20000000), Data: 6}, // already exists
+	}
+
+	added := tr.AddMany(entries...)
+
+	// Should only add the 2 new keys
+	require.Equal(t, 2, added)
+	require.Equal(t, 4, tr.Size())
+
+	// Existing keys should keep their original data
+	found, data := Find(tr, kadtest.Key32(0x10000000))
+	require.True(t, found)
+	require.Equal(t, 100, data) // original data preserved
+
+	found, data = Find(tr, kadtest.Key32(0x20000000))
+	require.True(t, found)
+	require.Equal(t, 200, data) // original data preserved
+
+	// New keys should be added
+	found, data = Find(tr, kadtest.Key32(0x30000000))
+	require.True(t, found)
+	require.Equal(t, 3, data)
+
+	found, data = Find(tr, kadtest.Key32(0x40000000))
+	require.True(t, found)
+	require.Equal(t, 4, data)
+
+	if d := CheckInvariant(tr); d != nil {
+		t.Fatalf("trie invariant discrepancy: %v", d)
+	}
+}
+
+func TestAddManyOnlyDuplicates(t *testing.T) {
+	tr := New[kadtest.Key32, int]()
+
+	key := kadtest.Key32(0x10000000)
+	tr.Add(key, 42)
+	require.Equal(t, 1, tr.Size())
+
+	// Try to add only the existing key
+	entries := []Entry[kadtest.Key32, int]{
+		{Key: key, Data: 100},
+	}
+
+	added := tr.AddMany(entries...)
+	require.Equal(t, 0, added)
+	require.Equal(t, 1, tr.Size())
+
+	// Data should be unchanged
+	found, data := Find(tr, key)
+	require.True(t, found)
+	require.Equal(t, 42, data)
+
+	if d := CheckInvariant(tr); d != nil {
+		t.Fatalf("trie invariant discrepancy: %v", d)
+	}
+}
+
+func TestAddManyIsOrderIndependent(t *testing.T) {
+	for _, s := range newKeySetList(10) {
+		entries := make([]Entry[kadtest.Key32, int], len(s.Keys))
+		for i, k := range s.Keys {
+			entries[i] = Entry[kadtest.Key32, int]{Key: k, Data: i}
+		}
+
+		base := New[kadtest.Key32, int]()
+		base.AddMany(entries...)
+		if d := CheckInvariant(base); d != nil {
+			t.Fatalf("base trie invariant discrepancy: %v", d)
+		}
+
+		for range 10 {
+			perm := rand.Perm(len(entries))
+			reorderedEntries := make([]Entry[kadtest.Key32, int], len(entries))
+			for i := range entries {
+				reorderedEntries[i] = entries[perm[i]]
+			}
+
+			reordered := New[kadtest.Key32, int]()
+			reordered.AddMany(reorderedEntries...)
+			if d := CheckInvariant(reordered); d != nil {
+				t.Fatalf("reordered trie invariant discrepancy: %v", d)
+			}
+
+			// Note: Equal doesn't check data, so we verify size and lookups
+			require.Equal(t, base.Size(), reordered.Size())
+			for _, k := range s.Keys {
+				foundBase, _ := Find(base, k)
+				foundReordered, _ := Find(reordered, k)
+				require.Equal(t, foundBase, foundReordered)
+			}
+		}
+	}
+}
+
+func TestAddManyLarge(t *testing.T) {
+	tr := New[kadtest.Key32, int]()
+
+	n := 100
+	entries := make([]Entry[kadtest.Key32, int], 0, n)
+	seen := make(map[string]bool)
+
+	for i := 0; len(entries) < n; i++ {
+		k := kadtest.RandomKey()
+		if seen[k.String()] {
+			continue
+		}
+		seen[k.String()] = true
+		entries = append(entries, Entry[kadtest.Key32, int]{
+			Key:  k,
+			Data: i,
+		})
+	}
+
+	added := tr.AddMany(entries...)
+	require.Equal(t, n, added)
+	require.Equal(t, n, tr.Size())
+
+	// Verify all keys are findable
+	for _, e := range entries {
+		found, data := Find(tr, e.Key)
+		require.True(t, found)
+		require.Equal(t, e.Data, data)
+	}
+
+	if d := CheckInvariant(tr); d != nil {
+		t.Fatalf("trie invariant discrepancy: %v", d)
+	}
+}
+
 func TestImmutableAddIgnoresDuplicates(t *testing.T) {
 	tr := New[kadtest.Key32, any]()
 	var err error
