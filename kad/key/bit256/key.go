@@ -29,6 +29,12 @@ func NewKey(data []byte) Key {
 	return Key{b: &b}
 }
 
+// NewKeyFromArray creates a Key from a 32-byte array without intermediate copying.
+// This is more efficient than NewKey when the caller already has a [32]byte array.
+func NewKeyFromArray(arr [KeyLen]byte) Key {
+	return Key{b: &arr}
+}
+
 // ZeroKey returns a 256-bit Kademlia key with all bits zeroed.
 func ZeroKey() Key {
 	var b [KeyLen]byte
