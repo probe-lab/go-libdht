@@ -1,3 +1,4 @@
+// Package bit256 provides a 256-bit Kademlia key implementation.
 package bit256
 
 import (
@@ -65,7 +66,7 @@ func (Key) BitLen() int {
 func (k Key) Xor(o Key) Key {
 	var xored [KeyLen]byte
 	if k.b != nil && o.b != nil {
-		for i := 0; i < KeyLen; i++ {
+		for i := range KeyLen {
 			xored[i] = k.b[i] ^ o.b[i]
 		}
 	} else if k.b != nil && o.b == nil {
@@ -82,7 +83,7 @@ func (k Key) CommonPrefixLength(o Key) int {
 		return 256
 	}
 	var x byte
-	for i := 0; i < KeyLen; i++ {
+	for i := range KeyLen {
 		x = k.b[i] ^ o.b[i]
 		if x != 0 {
 			return i*8 + 7 - int(math.Log2(float64(x))) // TODO: make this more efficient
