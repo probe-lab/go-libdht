@@ -1,4 +1,4 @@
-module github.com/probe-lab/go-libdht
+module github.com/ipfs/go-libdht
 
 go 1.23
 

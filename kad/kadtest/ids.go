@@ -3,9 +3,9 @@ package kadtest
 import (
 	"crypto/sha256"
 
-	"github.com/probe-lab/go-libdht/kad"
-	"github.com/probe-lab/go-libdht/kad/key"
-	"github.com/probe-lab/go-libdht/kad/key/bit256"
+	"github.com/ipfs/go-libdht/kad"
+	"github.com/ipfs/go-libdht/kad/key"
+	"github.com/ipfs/go-libdht/kad/key/bit256"
 )
 
 // ID is a concrete implementation of the NodeID interface.
