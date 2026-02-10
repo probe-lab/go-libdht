@@ -1,7 +1,7 @@
 package triert
 
 import (
-	"github.com/probe-lab/go-libdht/kad"
+	"github.com/ipfs/go-libdht/kad"
 )
 
 // Config holds configuration options for a TrieRT.

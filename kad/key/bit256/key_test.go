@@ -3,7 +3,7 @@ package bit256
 import (
 	"testing"
 
-	"github.com/probe-lab/go-libdht/kad/key/test"
+	"github.com/ipfs/go-libdht/kad/key/test"
 )
 
 func TestKey(t *testing.T) {

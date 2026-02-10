@@ -1,8 +1,8 @@
 # go-libdht
 
 [![ProbeLab](https://img.shields.io/badge/made%20by-ProbeLab-blue.svg)](https://probelab.io)
-[![GoDoc](https://pkg.go.dev/badge/github.com/probe-lab/go-libdht)](https://pkg.go.dev/github.com/probe-lab/go-libdht)
-[![Build status](https://img.shields.io/github/actions/workflow/status/probe-lab/go-libdht/go-test.yml?branch=main)](https://github.com/probe-lab/go-libdht/actions)
+[![GoDoc](https://pkg.go.dev/badge/github.com/ipfs/go-libdht)](https://pkg.go.dev/github.com/ipfs/go-libdht)
+[![Build status](https://img.shields.io/github/actions/workflow/status/ipfs/go-libdht/go-test.yml?branch=main)](https://github.com/ipfs/go-libdht/actions)
 
 `go-libdht` is a generic toolbox designed for the implementation and experimentation of Distributed Hash Tables (DHT) in Go. It establishes foundational types and interfaces applicable across a broad spectrum of DHTs, especially those sharing a similar topology. By offering reusable components like keys and routing tables, `go-libdht` streamlines the DHT implementation process. Using `go-libdht`, developers can seamlessly craft their own DHTs using the provided modular components.
 

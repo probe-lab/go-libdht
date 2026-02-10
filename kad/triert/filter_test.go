@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/probe-lab/go-libdht/kad/kadtest"
+	"github.com/ipfs/go-libdht/kad/kadtest"
 	"github.com/stretchr/testify/require"
 )
 
